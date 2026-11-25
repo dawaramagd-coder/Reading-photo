@@ -16,14 +16,18 @@ jobs:
       - name: Build Web
         run: |
           npm install --legacy-peer-deps
-          npm run build
+          npx vite build
           mkdir -p www
-          if [ -d ".output/public" ]; then cp -r .output/public/* www/;
-          elif [ -d "dist/client" ]; then cp -r dist/client/* www/;
-          elif [ -d "dist" ]; then cp -r dist/* www/;
-          elif [ -d ".vercel/output/static" ]; then cp -r .vercel/output/static/* www/;
+          INDEX_PATH=$(find .vercel .output dist -name "index.html" 2>/dev/null | head -n 1)
+          if [ -n "$INDEX_PATH" ]; then
+            BUILD_DIR=$(dirname "$INDEX_PATH")
+            echo "Found build at: $BUILD_DIR"
+            cp -r "$BUILD_DIR"/* www/
+          else
+            echo "Build files:"
+            find . -maxdepth 4 -not -path '*/.*'
+            exit 1
           fi
-          if [ ! -f "www/index.html" ]; then echo "<h1>Reading Photo</h1>" > www/index.html; fi
       - name: Setup Android
         run: |
           npm install @capacitor/core @capacitor/cli @capacitor/android --legacy-peer-deps
