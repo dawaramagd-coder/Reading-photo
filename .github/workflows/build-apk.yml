@@ -18,19 +18,14 @@ jobs:
           npm install --legacy-peer-deps
           sed -i 's/tanstackStart()/tanstackStart({ spa: { enabled: true } })/g' vite.config.ts
           npx vite build
-          mkdir -p www
+          mkdir -p www/tesseract
           cp -r .vercel/output/static/* www/ 2>/dev/null || true
           if [ ! -f "www/index.html" ] && [ -f "www/_shell.html" ]; then
             cp www/_shell.html www/index.html
           fi
-          if [ ! -f "www/index.html" ]; then
-            FOUND=$(find .vercel .output dist -name "*.html" 2>/dev/null | head -n 1)
-            if [ -n "$FOUND" ]; then
-              cp -r "$(dirname "$FOUND")"/* www/
-              cp "$FOUND" www/index.html
-            fi
-          fi
-          ls -la www/
+          cp node_modules/tesseract.js/dist/worker.min.js www/tesseract/ 2>/dev/null || true
+          cp node_modules/tesseract.js-core/*.wasm.js www/tesseract/ 2>/dev/null || true
+          cp node_modules/tesseract.js-core/*.wasm www/tesseract/ 2>/dev/null || true
       - name: Setup Android
         run: |
           npm install @capacitor/core @capacitor/cli @capacitor/android --legacy-peer-deps
