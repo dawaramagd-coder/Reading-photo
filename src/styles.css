@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", Georgia, "Iowan Old Style", serif;
+  --font-sans: "Outfit", system-ui, sans-serif;
+  --font-arabic: "Noto Naskh Arabic", "Geeza Pro", "Segoe UI", serif;
+
+  --color-paper: #f4efe7;
+  --color-sheet: #fbf8f3;
+  --color-ink: #1c1916;
+  --color-muted: #746b62;
+  --color-line: #e3d9cb;
+  --color-copper: #b24a28;
+  --color-copper-ink: #fff7f2;
+  --color-danger: #8d2f2a;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--color-paper);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  h1,
+  h2 {
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-copper) 28%, white);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-copper);
+    outline-offset: 2px;
+  }
+}
+
+@keyframes folio-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.folio-rise {
+  animation: folio-rise 220ms ease-out;
+}
+
+.folio-reading {
+  font-family: var(--font-display), var(--font-arabic);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .folio-rise {
+    animation: none;
+  }
+}
