@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -17,10 +17,17 @@ jobs:
         run: |
           npm install --legacy-peer-deps
           npm run build
+          mkdir -p www
+          if [ -d ".output/public" ]; then cp -r .output/public/* www/;
+          elif [ -d "dist/client" ]; then cp -r dist/client/* www/;
+          elif [ -d "dist" ]; then cp -r dist/* www/;
+          elif [ -d ".vercel/output/static" ]; then cp -r .vercel/output/static/* www/;
+          fi
+          if [ ! -f "www/index.html" ]; then echo "<h1>Reading Photo</h1>" > www/index.html; fi
       - name: Setup Android
         run: |
           npm install @capacitor/core @capacitor/cli @capacitor/android --legacy-peer-deps
-          npx cap init "ReadingPhoto" "com.dawaran.readingphoto" --web-dir dist
+          npx cap init "ReadingPhoto" "com.dawaran.readingphoto" --web-dir www
           npx cap add android
           npx cap sync android
       - name: Build APK
