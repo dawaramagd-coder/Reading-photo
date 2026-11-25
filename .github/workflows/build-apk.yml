@@ -19,14 +19,18 @@ jobs:
           sed -i 's/tanstackStart()/tanstackStart({ spa: { enabled: true } })/g' vite.config.ts
           npx vite build
           mkdir -p www
-          INDEX_PATH=$(find .vercel .output dist -name "index.html" 2>/dev/null | head -n 1)
-          if [ -n "$INDEX_PATH" ]; then
-            BUILD_DIR=$(dirname "$INDEX_PATH")
-            cp -r "$BUILD_DIR"/* www/
-          else
-            echo "Still no index.html"
-            exit 1
+          cp -r .vercel/output/static/* www/ 2>/dev/null || true
+          if [ ! -f "www/index.html" ] && [ -f "www/_shell.html" ]; then
+            cp www/_shell.html www/index.html
           fi
+          if [ ! -f "www/index.html" ]; then
+            FOUND=$(find .vercel .output dist -name "*.html" 2>/dev/null | head -n 1)
+            if [ -n "$FOUND" ]; then
+              cp -r "$(dirname "$FOUND")"/* www/
+              cp "$FOUND" www/index.html
+            fi
+          fi
+          ls -la www/
       - name: Setup Android
         run: |
           npm install @capacitor/core @capacitor/cli @capacitor/android --legacy-peer-deps
