@@ -13,19 +13,18 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-      - name: Build Web
+      - name: Build Web SPA
         run: |
           npm install --legacy-peer-deps
+          sed -i 's/tanstackStart()/tanstackStart({ spa: { enabled: true } })/g' vite.config.ts
           npx vite build
           mkdir -p www
           INDEX_PATH=$(find .vercel .output dist -name "index.html" 2>/dev/null | head -n 1)
           if [ -n "$INDEX_PATH" ]; then
             BUILD_DIR=$(dirname "$INDEX_PATH")
-            echo "Found build at: $BUILD_DIR"
             cp -r "$BUILD_DIR"/* www/
           else
-            echo "Build files:"
-            find . -maxdepth 4 -not -path '*/.*'
+            echo "Still no index.html"
             exit 1
           fi
       - name: Setup Android
